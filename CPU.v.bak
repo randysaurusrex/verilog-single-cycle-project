@@ -1,0 +1,36 @@
+module CPU(
+	input clk);
+	
+	wire [31:0] PCIn, PCOut, PC4, PCImm;
+	wire [3:0] ALUControl;
+	wire MemRead, MemWrite, MemToReg, ALUSrc, RegWrite, Branch, Jump;
+	wire [1:0] ALUOp;
+	wire [2:0] funct3;
+	wire [4:0] ReadReg1;
+	wire [4:0] ReadReg2;
+	wire [4:0] WriteReg;
+	wire [31:0] instruction;
+	wire signed [31:0] imm;
+	wire [31:0] WriteData, ReadData1, ReadData2, MuxOut;
+	wire [31:0] ALUResult;
+	wire [31:0] ReadDataMem;
+	wire Zero;
+	wire mux3select;
+	
+	ProgramCounter(.dataIn(PCIn), .dataOut(PCOut));
+	InstructionMemory inmem(.A(PCOut), .ID(instruction));
+	Control control(.OpCode(instruction[6:0]), .MemRead(MemRead), .MemWrite(MemWrite), .MemToReg(MemToReg), .ALUSrc(ALUSrc), 
+						 .RegWrite(RegWrite), .Branch(Branch), .Jump(Jump), .ALUOp(ALUOp));
+	ImmGen immgen(.instruction(instruction), .immExt(imm));
+	RegisterFile regfile(.CLK(clk), .RegWrite(RegWrite), .ReadReg1(ReadReg1), .ReadReg2(ReadReg2), .WriteReg(WriteReg), 
+								.WriteData(WriteData), .ReadData1(ReadData1), .ReadData2(ReadData2));
+	Mux mux1(.A(ReadData2), .B(imm), .select(ALUSrc), .MuxOut(MuxOut));
+	ALUControl alucontrol(.funct7(funct7), .funct3(funct3), .ALUOp(ALUOp), .ALUControl(ALUControl));
+	ALU alu(.A(ReadData1), .B(MuxOut), .ALUControl(ALUControl), .Result(ALUResult), .Zero(Zero));
+	DataMemory datamem(.CLK(clk), .MemWrite(MemWrite), .MemRead(MemRead), .Address(ALUResult), .WriteData(ReadData2), .ReadData(ReadDataMem));
+	Mux mux2(.A(ALUResult), .B(ReadDataMem), .select(MemtoReg), .MuxOut(WriteData));
+	Adder add4(.A(PCOut), .B(32b'00000000000000000000000000000100), .Sum(PC4));
+	Adder addImm(.A(PCOut), .B(imm), .Sum(PCImm));
+	assign mux3select = Jump | (Branch & Zero);
+	Mux mux3(.A(PC4), .B(PCImm), .select(mux3select), .MuxOut(PCIn));
+endmodule

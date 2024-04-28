@@ -1,0 +1,13 @@
+module PCCounter(
+	input CLK,
+	input [31:0] dataIn,
+	output reg [31:0] dataOut);
+	
+	reg [31:0] pcreg;
+	
+	always@(posedge CLK)
+	begin
+		pcreg <= dataIn;
+		dataOut = pcreg;
+	end
+endmodule

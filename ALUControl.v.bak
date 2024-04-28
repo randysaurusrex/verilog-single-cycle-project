@@ -1,0 +1,30 @@
+module ALUControl(
+	input [6:0] funct7,
+	input [2:0] funct3,
+	input [1:0] ALUOp,
+	output [3:0] ALUCommand);
+	
+	wire funct73;
+	assign funct73 = {funct7, funct3};
+	
+	always @(*)
+	begin
+		ALUCommand = 4'b0000;
+		
+		if (ALUOp == 2'b00) // Load or store
+			ALUCommand = 4'b0010;
+			
+		else if (ALUOp == 2'b01) // Branch if equal
+			ALUCommand = 4'b0110;
+			
+		else if (ALUOp == 2'b10) //R-type
+			begin
+			if (funct73 == 4'b1000) // ADD
+				ALUCommand = 4'b0110;
+			else if (funct73 == 4'b0000) // SUB
+				ALUCommand = 4'b0010;
+			else if (funct73 == 4'b0110) // OR
+				ALUCommand = 4'b0001;
+			end
+	end
+endmodule

@@ -1,0 +1,20 @@
+// Load this into your instruction memory in an initial block
+// using a $readmemh() function.
+// Here's the code for this test:
+//  lw x11, 0(x10)
+//  lw x13, 0(x12)
+//  lw x15, 0(x14)
+
+//  add x11, x11, x13
+//  sub x9, x11, x15
+//  beq x0, x0, Thing
+//  and x11, x11, x0
+// Thing:
+//  or x17, x13,  x9
+00052583
+00062683
+00072783
+00d585b3
+40f584b3
+00000463
+0005f5be

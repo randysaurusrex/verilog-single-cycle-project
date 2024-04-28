@@ -1,0 +1,33 @@
+module Control(
+  input [6:0] OpCode,
+  output reg MemRead,
+  output reg MemWrite,
+  output reg MemToReg,
+  output reg ALUSrc,
+  output reg RegWrite,
+  output reg [1:0] ALUOp
+);
+  
+  always @(*)
+  begin
+    case (OpCode)
+      7'b0110011: 
+		begin
+        { ALUSrc, MemToreg, RegWrite, MemRead, MemWrite, ALUOp } = 7'b001000;
+      end
+      7'b0010011: begin
+        { ALUSrc, MemToreg, RegWrite, MemRead, MemWrite, ALUOp } = 7'b1010000;
+      end
+      7'b0000011: begin
+        { ALUSrc, MemToreg, RegWrite, MemRead, MemWrite, ALUOp } = 7'b1111000;
+      end
+      7'b0100011: begin
+        { ALUSrc, MemToreg, RegWrite, MemRead, MemWrite, ALUOp } = 7'b1x00100;
+      end
+      default: begin
+        { ALUSrc, MemToreg, RegWrite, MemRead, MemWrite, ALUOp } = 7'b0000000;
+      end
+    endcase
+  end
+
+endmodule

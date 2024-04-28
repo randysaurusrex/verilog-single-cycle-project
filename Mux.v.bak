@@ -1,0 +1,15 @@
+module Mux(
+	input [31:0] A,
+	input [31:0] B,
+	input select,
+	output reg [31:0] muxOut);
+
+	always @(*)
+	begin
+		case(select)
+		2'b00: muxOut = A;
+		2'b01: muxOut = B;
+		default: muxOut = 32'dx;
+		endcase
+	end
+endmodule
